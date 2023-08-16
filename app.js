@@ -5,10 +5,11 @@ const path = require("path");
 const dbPath = path.join(__dirname, "cricketTeam.db");
 const app = express();
 let db = null;
+
 const initializedbandserver = async () => {
   try {
     db = await open({
-      fileName: dbPath,
+      filename: dbPath,
       driver: sqlite3.Database,
     });
     app.listen(3000, () => {
@@ -16,20 +17,23 @@ const initializedbandserver = async () => {
     });
   } catch (e) {
     console.log(`DB Error:${e.message}`);
+    process.exit(1);
   }
 };
 initializedbandserver();
 app.get("/players/", async (request, response) => {
-  const playersQuery = SELECT * FROM;
-  cricket_team;
-  const playersArray = await db.all(playersQuery);
-  const ans = (playersList) => {
+  const getplayersquery = `SELECT * FROM cricket_team;`;
+  const convertDbobjtoResponseobj = (dbObj) => {
     return {
-      playerId: playersList.player_id,
-      playerName: playerList.player_name,
-      jerseyNumber: playersList.jersey_number,
-      role: playersList.role,
+      playerId: dbObj.player_id,
+      playerName: dbObj.player_name,
+      jerseyNumber: dbObj.jersey_number,
+      playerRole: dbObj.player_role,
     };
   };
-  response.send(playerList.map((eachPlayer) => ans(eachPlayer)));
+  const playersList = await db.all(getplayersquery);
+
+  response.send(
+    playersList.map((eachPlayer) => convertDbobjtoResponseobj(eachPlayer))
+  );
 });
